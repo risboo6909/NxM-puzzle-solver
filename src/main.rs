@@ -18,9 +18,11 @@ fn main() {
 
     println!("{:?}", res);
 
+    // example puzzle from https://www.youtube.com/watch?v=NoUFgLGVVgw
+
     println!("Solving 3x3...");
 
-    let start_pos: [[usize; 3]; 3] = [[4, 3, 8], [0, 7, 2], [6, 1, 5]];
+    let start_pos: [[usize; 3]; 3] = [[2, 3, 6], [5, 7, 4], [0, 1, 8]];
     let target_pos: [[usize; 3]; 3] = [[1, 2, 3], [4, 5, 6], [7, 8, 0]];
 
     let start_board = board::Board::<3, 3>::new(start_pos);
