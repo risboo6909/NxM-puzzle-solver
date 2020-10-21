@@ -5,11 +5,16 @@ use crate::board::{Board, Dir};
 const RED_ZONE: usize = 100 * 1024; // 100k
 const STACK_PER_RECURSION: usize = 1 * 1024 * 1024; // 1MB
 
+// the bigger this number the less optimal solution we get but at the same time
+// search space reduces significantly
+const RELAXATION_COEFF: isize = 7;
+
 pub(crate) struct Engine<const HEIGHT: usize, const WIDTH: usize> {
     start_board: Board<HEIGHT, WIDTH>,
     target_board: Board<HEIGHT, WIDTH>,
     visited: FxHashMap<Board<HEIGHT, WIDTH>, usize>,
     best: Vec<Dir>,
+    counter: u128,
 }
 
 pub fn ensure_sufficient_stack<R, F: FnOnce() -> R>(f: F) -> R {
@@ -26,18 +31,20 @@ impl<const HEIGHT: usize, const WIDTH: usize> Engine<HEIGHT, WIDTH> {
             target_board,
             visited: FxHashMap::default(),
             best: vec![],
+            counter: 0,
         }
     }
 
     #[inline(never)]
     fn rec(&mut self, board: &mut Board<HEIGHT, WIDTH>, cur: &mut Vec<Dir>) {
         if let Some(l) = self.visited.get(board) {
-            if cur.len() > *l {
+            if *l as isize - cur.len() as isize <= RELAXATION_COEFF {
                 return;
             }
         }
 
         self.visited.insert(*board, cur.len());
+        self.counter += 1;
 
         if board == &self.target_board {
             if cur.len() < self.best.len() || self.best.is_empty() {
@@ -80,9 +87,11 @@ impl<const HEIGHT: usize, const WIDTH: usize> Engine<HEIGHT, WIDTH> {
         }
     }
 
-    pub(crate) fn solve(&mut self) -> Vec<Dir> {
+    pub(crate) fn solve(&mut self) -> (Vec<Dir>, u128) {
+        self.counter = 0;
+
         self.rec(&mut self.start_board.clone(), &mut vec![]);
 
-        self.best.clone()
+        (self.best.clone(), self.counter)
     }
 }

@@ -4,6 +4,7 @@ mod board;
 mod engine;
 
 fn main() {
+
     println!("Solving 4x2...");
 
     let start_pos: [[usize; 4]; 2] = [[7, 4, 0, 3], [5, 2, 1, 6]];
