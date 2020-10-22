@@ -15,7 +15,7 @@ const MAX_DEPTH: usize = 250;
 pub(crate) struct Engine<const HEIGHT: usize, const WIDTH: usize> {
     start_board: Board<HEIGHT, WIDTH>,
     target_board: Board<HEIGHT, WIDTH>,
-    visited: FxHashMap<Board<HEIGHT, WIDTH>, usize>,
+    visited: FxHashMap<Board<HEIGHT, WIDTH>, u16>,
     best: Vec<Dir>,
     moves_counter: usize,
     depth: usize,
@@ -58,7 +58,7 @@ impl<const HEIGHT: usize, const WIDTH: usize> Engine<HEIGHT, WIDTH> {
             }
         }
 
-        self.visited.insert(*board, cur.len());
+        self.visited.insert(*board, cur.len() as u16);
         self.moves_counter += 1;
 
         if board == &self.target_board {
@@ -79,6 +79,10 @@ impl<const HEIGHT: usize, const WIDTH: usize> Engine<HEIGHT, WIDTH> {
             cur.pop();
         }
 
+        if self.depth == 0 {
+            self.visited.clear();
+        }
+
         if board.can_move_right() {
             cur.push(Dir::Right);
             board.move_right();
@@ -87,6 +91,10 @@ impl<const HEIGHT: usize, const WIDTH: usize> Engine<HEIGHT, WIDTH> {
             self.depth -= 1;
             board.move_left();
             cur.pop();
+        }
+
+        if self.depth == 0 {
+            self.visited.clear();
         }
 
         if board.can_move_up() {
@@ -99,6 +107,10 @@ impl<const HEIGHT: usize, const WIDTH: usize> Engine<HEIGHT, WIDTH> {
             cur.pop();
         }
 
+        if self.depth == 0 {
+            self.visited.clear();
+        }
+        
         if board.can_move_down() {
             cur.push(Dir::Down);
             board.move_down();
