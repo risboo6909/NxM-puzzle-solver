@@ -9,3 +9,4 @@ edition = "2018"
 [dependencies]
 fxhash = "0.2.1"
 stacker = "0.1.12"
+lru = "0.6.0"
