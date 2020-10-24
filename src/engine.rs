@@ -86,7 +86,7 @@ impl<const HEIGHT: usize, const WIDTH: usize> Engine<HEIGHT, WIDTH> {
                 self.best = cur.clone();
                 self.solution_found = true;
                 self.improve_attempts = 0;
-                self.max_improve_attempts = min(self.moves_counter << 4, MAX_IMPROVE_ATTEMPTS);
+                self.max_improve_attempts = min(self.moves_counter << 5, MAX_IMPROVE_ATTEMPTS);
                 println!(
                     "try to improve solution of length {} in {} moves",
                     self.best.len(),
